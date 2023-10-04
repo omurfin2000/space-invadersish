@@ -151,7 +151,7 @@ while running:
     screen.fill((0, 0, 0))
 
     for p in projectiles:
-        if p != None:          # Need to make a way to get rid of the old projectiles which are floating around above the screen
+        if p != None:          
             p.update()
 
     for entity in all_sprites:
