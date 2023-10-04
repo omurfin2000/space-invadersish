@@ -80,15 +80,14 @@ class Player(pygame.sprite.Sprite):
 class Alien(pygame.sprite.Sprite):
     def __init__(self):
         super(Alien, self).__init__()
-        self.surf = pygame.Surface((60, 40))
-        self.surf.fill((255, 0, 0))
-        self.rect = self.surf.get_rect()
+        self.rect = pygame.Rect(0, 0, 60, 40)
         self.rect.x = random.randint(100, 1700)
         self.rect.y = SPAWN
         self.clock = time.time()
+        self.image = pygame.image.load("C:/Users/jamie/Oliver Computer Work/Python/Pygame Portfolio/Space Invaders/images/alien.png")
     
     def update(self):
-        if time.time() - self.clock < 0.2:
+        if time.time() - self.clock < 0.1:
             pass
         else: 
             self.clock = time.time()
@@ -99,6 +98,8 @@ class Alien(pygame.sprite.Sprite):
                 self.rect.move_ip(20, 15)
         if self.rect.y >= PLANE:
             player.kill()
+        if pygame.sprite.spritecollideany(self, projectiles):
+            self.kill()
         
 
 
@@ -108,9 +109,11 @@ screen = pygame.display.set_mode([SCREEN_WIDTH - 80, SCREEN_HEIGHT - 80])
 projectiles = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
+players = pygame.sprite.Group()
 
 player = Player()
 all_sprites.add(player)
+players.add(player)
 
 
 running = True
@@ -137,9 +140,12 @@ while running:
             projectiles.add(proj)
             all_sprites.add(proj)
 
-    if time.time() - enemySpawnClock < 3:
+    if time.time() - enemySpawnClock < 2:
         for entity in enemies:
             entity.update()
+            if entity.rect.y >= PLANE:
+                print(entity.rect.y)
+                player.kill()
     else:    
         enemySpawnClock = time.time()
         enemy = Alien()
@@ -147,15 +153,21 @@ while running:
         all_sprites.add(enemy)
  
 
-
     screen.fill((0, 0, 0))
 
     for p in projectiles:
-        if p != None:          
+        if p != None:        
             p.update()
+            screen.blit(p.surf, p.rect)
 
-    for entity in all_sprites:
-        screen.blit(entity.surf, entity.rect)
+    for e in enemies:
+        screen.blit(e.image, e.rect)
+        
+    for p in players:
+        screen.blit(player.surf, player.rect)
+    
+    
+    
 
     pygame.display.flip() # flip updates the screen
 
