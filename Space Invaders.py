@@ -20,7 +20,15 @@ surf_center = (
 )
 '''
 
+pygame.mixer.init()
 pygame.init()
+
+pygame.mixer.music.load("C:/Users/jamie/Oliver Computer Work/Python/Pygame Portfolio/Space Invaders/music/spaceinvaders1.mp3")
+pygame.mixer.music.play(loops=-1)
+
+enemyDeathSound = pygame.mixer.Sound("C:/Users/jamie/Oliver Computer Work/Python/Pygame Portfolio/Space Invaders/music/invaderkilled.wav")
+playerKilled = pygame.mixer.Sound("C:/Users/jamie/Oliver Computer Work/Python/Pygame Portfolio/Space Invaders/music/explosion.wav")
+shoot = pygame.mixer.Sound("C:/Users/jamie/Oliver Computer Work/Python/Pygame Portfolio/Space Invaders/music/shoot.wav")
 
 surf = pygame.Surface((50,50))
 
@@ -46,6 +54,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect()
         self.rect.x = ((coord[0]+surf.get_width()/2))
         self.rect.y = ((coord[1]+surf.get_height()/2))
+        shoot.play()
     
     def update(self):
         self.rect.move_ip(0,-1)
@@ -96,10 +105,12 @@ class Alien(pygame.sprite.Sprite):
                 self.rect.move_ip(-20, 15)
             elif r == 1:
                 self.rect.move_ip(20, 15)
-        if self.rect.y >= PLANE:
+        if self.rect.y == PLANE:
             player.kill()
+            playerKilled.play()
         if pygame.sprite.spritecollideany(self, projectiles):
             self.kill()
+            enemyDeathSound.play()
         
 
 
@@ -143,9 +154,6 @@ while running:
     if time.time() - enemySpawnClock < 2:
         for entity in enemies:
             entity.update()
-            if entity.rect.y >= PLANE:
-                print(entity.rect.y)
-                player.kill()
     else:    
         enemySpawnClock = time.time()
         enemy = Alien()
@@ -171,5 +179,6 @@ while running:
 
     pygame.display.flip() # flip updates the screen
 
-
+pygame.mixer.music.stop()
+pygame.mixer.quit()
 pygame.quit()
